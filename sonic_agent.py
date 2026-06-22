@@ -37,6 +37,7 @@ async def main():
     # Using sys.executable ensures it runs in the exact same python environment
     mcp_servers = [
         types.McpStdioServer(
+            name="sonic_mcp",
             command=sys.executable,
             args=[server_path]
         )

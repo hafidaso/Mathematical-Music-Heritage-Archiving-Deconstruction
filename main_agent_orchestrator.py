@@ -18,6 +18,7 @@ server_path = os.path.abspath("sonic_mcp_server.py")
 # Configure Stdio Transport for MCP
 mcp_servers = [
     types.McpStdioServer(
+        name="sonic_mcp",
         command=sys.executable,
         args=[server_path]
     )
@@ -26,6 +27,7 @@ mcp_servers = [
 # Configure Mathematician Agent
 math_config = LocalAgentConfig(
     mcp_servers=mcp_servers,
+    model="gemini-2.5-flash",
     system_instructions=(
         "You are an expert audio signal analyst specializing in musical heritage. "
         "Your task is to analyze acoustic features and compare them using acoustic distances, "
@@ -36,13 +38,13 @@ math_config = LocalAgentConfig(
 # Configure Cultural Historian Agent
 anthro_config = LocalAgentConfig(
     mcp_servers=mcp_servers,
+    model="gemini-2.5-flash",
     system_instructions=(
         "You are an expert music anthropologist and heritage historian. "
         "You review mathematical reports and interpret them in a cultural, historical, and contextual manner. "
         "Your goal is to examine the cross-cultural distance matrix and explain any structural connections "
         "between regional genres (e.g., traces of African polyrhythms, Tuareg desert blues, or Andalusian string traditions). "
-        "If you identify any conflicts or require clarification, ask the Mathematician specific questions "
-        "about temporal or spectral features to resolve the discrepancies and generate a unified report."
+        "Synthesize the findings directly without asking further questions. Generate a unified final cultural report immediately."
     )
 )
 
@@ -135,12 +137,18 @@ def run_heritage_pipeline(audio_path: str, context_notes: str):
 
 if __name__ == "__main__":
     # Local execution test
-    test_audio = "/Users/hafida/Downloads/Ride Cymbal Zap.mp3"
-    test_notes = "The audio piece reflects nomadic desert culture and traditional camel caravan movements."
+    test_audio = "trim_Zina Daoudia - Meriem [Official Music Video] (2026)  زينة الداودية - مريم.wav"
+    test_notes = "Unknown origin. Please analyze the acoustic features and determine the cultural taxonomy."
     
     if os.path.exists(test_audio):
         res = run_heritage_pipeline(test_audio, test_notes)
         print("\n================ FINAL RESULTS ================")
-        print("CULTURAL REPORT:\n", res["cultural_report"])
+        report_text = res["cultural_report"]
+        print("CULTURAL REPORT:\n", report_text)
+        
+        # Save the report to a markdown file
+        with open("heritage_acoustic_report.md", "w", encoding="utf-8") as f:
+            f.write(report_text)
+        print("\n[✔] The report has been successfully saved to 'heritage_acoustic_report.md'")
     else:
         print("Test audio file not found. Please verify the path.")
